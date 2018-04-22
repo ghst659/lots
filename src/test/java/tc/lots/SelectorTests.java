@@ -30,12 +30,12 @@ public class SelectorTests {
                 },
             },
             {
-                new int[]{900, 100, 700, 500, 600, 500, 200},
+                new int[]{900, 100, 700, 500, 50, 600, 500, 200, 33, 25},
                 1000,
                 new String[][]{
                     {"L0=900", "L1=100"},
-                    {"L3=500", "L5=500"},
-                    {"L2=700", "L1=100", "L6=200"}
+                    {"L3=500", "L6=500"},
+                    {"L2=700", "L1=100", "L7=200"}
                 },
             },
             {
@@ -51,7 +51,17 @@ public class SelectorTests {
                 new String[][]{
                     {"L0=5", "L1=5"}
                 }
-            }
+            },
+            {
+                new int[]{2, 2, 1, 1},
+                3,
+                new String[][]{
+                    {"L0=2", "L2=1"},
+                    {"L0=2", "L3=1"},
+                    {"L1=2", "L2=1"},
+                    {"L1=2", "L3=1"},
+                },
+            },
         });
     }
     private Collection<Lot> lots = new LinkedList<>();
@@ -91,13 +101,7 @@ public class SelectorTests {
             System.err.format("\t%s v %s\n",expected.get(i), got.get(i));
         }
     }
-    /*
-     ********************************************************************************
-     */
 
-    /**
-     * Compares two sets of strings.
-     */
     private static Comparator<Set<String>> listOfSetsCompare = new Comparator<>() {
         @Override
         public int compare(Set<String> a, Set<String> b) {
@@ -118,6 +122,7 @@ public class SelectorTests {
             }
         }
     };
+
     private static List<String> setList(Set<String> s) {
         List<String> result = new ArrayList<>(s);
         Collections.sort(result);

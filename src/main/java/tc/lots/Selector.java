@@ -38,14 +38,10 @@ public class Selector {
 
     private static void collectTrails(List<String> keys, Map<String, Lot> map, int target, int lastHead,
                                       Collection<Set<String>> result, Set<String> accumTrail) {
-
         for (int head = findIndex(keys, map, target, 0, lastHead - 1);
              head >= 0;
              head = findIndex(keys, map, target, 0, head - 1)) {
             int remainder = target - value(keys, map, head);
-            if (remainder < 0) {
-                continue;  // optimisation to prevent additonal set creation
-            }
             Set<String> currentTrail = new TreeSet<>(accumTrail);
             currentTrail.add(keys.get(head));
             if (remainder == 0) {
@@ -86,9 +82,5 @@ public class Selector {
 
     private static int value(List<String> keys, Map<String, Lot> map, int index) {
         return map.get(keys.get(index)).quantity();
-    }
-
-    private static String tstr(Set<String> t) {
-        return "<" + String.join(",", t) + ">";
     }
 }
