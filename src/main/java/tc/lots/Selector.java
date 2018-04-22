@@ -38,10 +38,7 @@ public class Selector {
 
     private static void collectTrails(List<String> keys, Map<String, Lot> map, int target, int lastHead,
                                       Collection<Set<String>> result, Set<String> accumTrail) {
-        for (int head = findIndex(keys, map, target, 0, lastHead - 1);
-             head >= 0;
-             head = findIndex(keys, map, target, 0, head - 1)) {
-             // --head) {
+        for (int head = findIndex(keys, map, target, 0, lastHead - 1); head >= 0; --head) {
             int remainder = target - value(keys, map, head);
             Set<String> currentTrail = new TreeSet<>(accumTrail);
             currentTrail.add(keys.get(head));
