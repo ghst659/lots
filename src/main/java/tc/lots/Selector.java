@@ -40,8 +40,8 @@ public class Selector {
                                       Collection<Set<String>> result, Set<String> accumTrail) {
         for (int head = findIndex(keys, map, target, 0, lastHead - 1);
              head >= 0;
-             // head = findIndex(keys, map, target, 0, head - 1)) {
-             --head) {
+             head = findIndex(keys, map, target, 0, head - 1)) {
+             // --head) {
             int remainder = target - value(keys, map, head);
             Set<String> currentTrail = new TreeSet<>(accumTrail);
             currentTrail.add(keys.get(head));

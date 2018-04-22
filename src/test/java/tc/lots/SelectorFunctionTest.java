@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 @RunWith(Parameterized.class)
 public class SelectorFunctionTest {
@@ -64,6 +65,7 @@ public class SelectorFunctionTest {
             },
         });
     }
+    private Logger log = Logger.getLogger(this.getClass().getName());
     private Collection<Lot> lots = new LinkedList<>();
     private int target = 0;
     private List<Set<String>> expected = new ArrayList<>();
@@ -82,7 +84,7 @@ public class SelectorFunctionTest {
             buf.append(" ");
             buf.append(label);
         }
-        System.err.println(buf.toString());
+        log.info(buf.toString());
         selector = new Selector(lots);
         target = testTarget;
         for (String[] tags : wantedLabels) {
@@ -100,7 +102,7 @@ public class SelectorFunctionTest {
         Collections.sort(got, listOfSetsCompare);
         for (int i = 0; i < got.size(); ++i) {
             Assert.assertEquals(expected.get(i), got.get(i));
-            System.err.format("\t%s v %s\n",expected.get(i), got.get(i));
+            log.info(String.format("\t%s v %s",expected.get(i), got.get(i)));
         }
     }
 
