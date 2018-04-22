@@ -21,20 +21,6 @@ public class Selector {
         return result;
     }
 
-    public static List<String> findRoots(Collection<Lot> lots, int targetSum) {
-        List<String> result = new LinkedList<>();
-        Map<String, Lot> map = new HashMap<>();
-        List<String> keys = new ArrayList<>();
-        fillKeyMap(lots, map, keys);
-        // ===========================================
-        int head = findIndex(keys, map, targetSum, 0, keys.size()-1);
-        while (head > 0) {
-            result.add(keys.get(head));
-            head = findIndex(keys, map, targetSum, 0, head-1);
-        }
-        return result;
-    }
-
     private static void fillKeyMap(Collection<Lot> lots, Map<String, Lot> map, List<String> keys) {
         map.clear();
         keys.clear();
@@ -50,20 +36,23 @@ public class Selector {
         });
     }
 
-    public static void collectTrails(List<String> keys, Map<String, Lot> map, int target, int lastHead,
-                                     Collection<Set<String>> result, Set<String> accumTrail) {
-        int head = findIndex(keys, map, target, 0, lastHead - 1);
-        while (head >= 0) {
+    private static void collectTrails(List<String> keys, Map<String, Lot> map, int target, int lastHead,
+                                      Collection<Set<String>> result, Set<String> accumTrail) {
+
+        for (int head = findIndex(keys, map, target, 0, lastHead - 1);
+             head >= 0;
+             head = findIndex(keys, map, target, 0, head - 1)) {
+            int remainder = target - value(keys, map, head);
+            if (remainder < 0) {
+                continue;  // optimisation to prevent additonal set creation
+            }
             Set<String> currentTrail = new TreeSet<>(accumTrail);
             currentTrail.add(keys.get(head));
-            int nodeValue = value(keys, map, head);
-            int remainder = target - nodeValue;
-            if (nodeValue == target) {
+            if (remainder == 0) {
                 result.add(currentTrail);  // add this trail to the result.
             } else if (remainder > 0) {
                 collectTrails(keys, map, remainder, head, result, currentTrail);
             }
-            head = findIndex(keys, map, target, 0, head - 1);
         }
     }
 
@@ -76,7 +65,7 @@ public class Selector {
      * @param hi Upper boundary for the search.
      * @return Returns the matching index or -1 if not found.
      */
-    public static int findIndex(List<String> keys, Map<String, Lot> map, int target, int lo, int hi) {
+    private static int findIndex(List<String> keys, Map<String, Lot> map, int target, int lo, int hi) {
         if (hi < lo || lo < 0 || hi >= keys.size() || target < value(keys, map, lo)) {
             return -1;
         }

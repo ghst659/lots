@@ -59,12 +59,12 @@ public class SelectorTests {
     private List<Set<String>> expected = new ArrayList<>();
     /**
      * Constructs the parameterised data.
-     * @param lotCounts
-     * @param testTarget
-     * @param wantedLabels
+     * @param lotCounts List of lot quantities n[k]; lot names will be Lk=n
+     * @param testTarget Integer target sum for lots to sum up to.
+     * @param wantedLabels Expected sets of Lx=n string labels, each set summing to target.
      */
     public SelectorTests(int[] lotCounts, int testTarget, String[][] wantedLabels) {
-        StringBuffer buf = new StringBuffer("Lots:");
+        StringBuffer buf = new StringBuffer(String.format("Target: %d; Lots:", testTarget));
         for (int i = 0; i < lotCounts.length; ++i) {
             String label = String.format("L%d=%d", i, lotCounts[i]);
             lots.add(new LotTestImpl(label, lotCounts[i]));
@@ -78,24 +78,17 @@ public class SelectorTests {
             wantedSet.addAll(Arrays.asList(tags));
             expected.add(wantedSet);
         }
-        Collections.sort(expected, lsComp);
-    }
-
-    // @Test
-    public void testFindHead() {
-       List<String> got = Selector.findRoots(lots, target);
-       for (var key : got) {
-           System.err.println(key);
-       }
+        Collections.sort(expected, listOfSetsCompare);
     }
 
     @Test
     public void testSelectorImpl() {
         List<Set<String>> got = new ArrayList<>(Selector.findMatches(lots, target));
         Assert.assertEquals(expected.size(), got.size());
-        Collections.sort(got, lsComp);
+        Collections.sort(got, listOfSetsCompare);
         for (int i = 0; i < got.size(); ++i) {
             Assert.assertEquals(expected.get(i), got.get(i));
+            System.err.format("\t%s v %s\n",expected.get(i), got.get(i));
         }
     }
     /*
@@ -105,7 +98,7 @@ public class SelectorTests {
     /**
      * Compares two sets of strings.
      */
-    private static Comparator<Set<String>> lsComp = new Comparator<>() {
+    private static Comparator<Set<String>> listOfSetsCompare = new Comparator<>() {
         @Override
         public int compare(Set<String> a, Set<String> b) {
             if (a.size() < b.size()) {
@@ -125,7 +118,6 @@ public class SelectorTests {
             }
         }
     };
-
     private static List<String> setList(Set<String> s) {
         List<String> result = new ArrayList<>(s);
         Collections.sort(result);
