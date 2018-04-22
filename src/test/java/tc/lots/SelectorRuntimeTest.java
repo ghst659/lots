@@ -13,21 +13,12 @@ public class SelectorRuntimeTest {
     @Parameterized.Parameters(name="Case {index}: {0} {1} {2}")
     public static Iterable<Object[]> data() {
         return Arrays.asList(new Object[][]{
-            {
-                5, 100, 2,
-            },
-            {
-                10, 100, 3,
-            },
-            {
-                20, 50, 3,
-            },
-            {
-                30, 25, 2,
-            },
-            {
-                50, 25, 2,
-            },
+            {5, 100, 2},
+            {10, 100, 3},
+            {20, 50, 3},
+            {30, 30, 2},
+            {50, 20, 2},
+            {75, 15, 2},
         });
     }
     private Logger log = Logger.getLogger(this.getClass().getName());
