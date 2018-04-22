@@ -26,6 +26,7 @@ public class Selector {
         keys.clear();
         for (Lot l: lots) {
             String key = l.name();
+            assert ! map.containsKey(key) : String.format("Duplicate Lot name: %s", key);
             map.put(l.name(), l);
             keys.add(key);
         }
