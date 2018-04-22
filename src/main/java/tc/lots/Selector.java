@@ -3,21 +3,20 @@ package tc.lots;
 import java.util.*;
 
 public class Selector {
+    private Map<String, Lot> map = new HashMap<>();  // Prefer O(1) lookup
+    private List<String> keys = new ArrayList<>(); // Prefer O(1) random access
+    public Selector(Collection<Lot> lots) {
+        fillKeyMap(lots, map, keys);
+    }
+
     /**
      * Finds the sets of lot names that satisfy a target sum.
-     * @param lots A collection of Lots
      * @param targetSum The target sum
      * @return A collection of lot name sets, each of which has lots that satisfy the sum.
      */
-    public static Collection<Set<String>> findMatches(Collection<Lot> lots, int targetSum) {
+    public Collection<Set<String>> matchTarget(int targetSum) {
         Collection<Set<String>> result = new LinkedList<>();
-        Map<String, Lot> map = new HashMap<>();
-        List<String> keys = new ArrayList<>();
-        fillKeyMap(lots, map, keys);
-        // ===========================================
-        // find all the matching sets
-        Set<String> trailHead = new TreeSet<>();
-        collectTrails(keys, map, targetSum, keys.size(), result, trailHead);
+        collectTrails(keys, map, targetSum, keys.size(), result, new TreeSet<>());
         return result;
     }
 
@@ -41,7 +40,8 @@ public class Selector {
                                       Collection<Set<String>> result, Set<String> accumTrail) {
         for (int head = findIndex(keys, map, target, 0, lastHead - 1);
              head >= 0;
-             head = findIndex(keys, map, target, 0, head - 1)) {
+             // head = findIndex(keys, map, target, 0, head - 1)) {
+             --head) {
             int remainder = target - value(keys, map, head);
             Set<String> currentTrail = new TreeSet<>(accumTrail);
             currentTrail.add(keys.get(head));

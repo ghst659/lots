@@ -8,7 +8,7 @@ import org.junit.runners.Parameterized;
 import java.util.*;
 
 @RunWith(Parameterized.class)
-public class SelectorTests {
+public class SelectorFunctionTest {
     @Parameterized.Parameters(name="{index}: {1}")
     public static Iterable<Object[]> data() {
         return Arrays.asList(new Object[][] {
@@ -67,13 +67,14 @@ public class SelectorTests {
     private Collection<Lot> lots = new LinkedList<>();
     private int target = 0;
     private List<Set<String>> expected = new ArrayList<>();
+    private Selector selector = null;
     /**
      * Constructs the parameterised data.
      * @param lotCounts List of lot quantities n[k]; lot names will be Lk=n
      * @param testTarget Integer target sum for lots to sum up to.
      * @param wantedLabels Expected sets of Lx=n string labels, each set summing to target.
      */
-    public SelectorTests(int[] lotCounts, int testTarget, String[][] wantedLabels) {
+    public SelectorFunctionTest(int[] lotCounts, int testTarget, String[][] wantedLabels) {
         StringBuffer buf = new StringBuffer(String.format("Target: %d; Lots:", testTarget));
         for (int i = 0; i < lotCounts.length; ++i) {
             String label = String.format("L%d=%d", i, lotCounts[i]);
@@ -82,6 +83,7 @@ public class SelectorTests {
             buf.append(label);
         }
         System.err.println(buf.toString());
+        selector = new Selector(lots);
         target = testTarget;
         for (String[] tags : wantedLabels) {
             Set<String> wantedSet = new TreeSet<>();
@@ -93,7 +95,7 @@ public class SelectorTests {
 
     @Test
     public void testSelectorImpl() {
-        List<Set<String>> got = new ArrayList<>(Selector.findMatches(lots, target));
+        List<Set<String>> got = new ArrayList<>(selector.matchTarget(target));
         Assert.assertEquals(expected.size(), got.size());
         Collections.sort(got, listOfSetsCompare);
         for (int i = 0; i < got.size(); ++i) {
