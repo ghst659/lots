@@ -13,6 +13,31 @@ public class Selector {
         Collection<Set<String>> result = new LinkedList<>();
         Map<String, Lot> map = new HashMap<>();
         List<String> keys = new ArrayList<>();
+        fillKeyMap(lots, map, keys);
+        // ===========================================
+        // find all the matching sets
+        Set<String> trailHead = new TreeSet<>();
+        collectTrails(keys, map, targetSum, keys.size(), result, trailHead);
+        return result;
+    }
+
+    public static List<String> findRoots(Collection<Lot> lots, int targetSum) {
+        List<String> result = new LinkedList<>();
+        Map<String, Lot> map = new HashMap<>();
+        List<String> keys = new ArrayList<>();
+        fillKeyMap(lots, map, keys);
+        // ===========================================
+        int head = findIndex(keys, map, targetSum, 0, keys.size()-1);
+        while (head > 0) {
+            result.add(keys.get(head));
+            head = findIndex(keys, map, targetSum, 0, head-1);
+        }
+        return result;
+    }
+
+    private static void fillKeyMap(Collection<Lot> lots, Map<String, Lot> map, List<String> keys) {
+        map.clear();
+        keys.clear();
         for (Lot l: lots) {
             String key = l.name();
             map.put(l.name(), l);
@@ -23,32 +48,22 @@ public class Selector {
             Integer bQ = map.get(b).quantity();
             return aQ.compareTo(bQ);
         });
-        // ===========================================
-        // find all the matching sets
-        collectTrails(keys, map, targetSum, keys.size(), result, new TreeSet<String>());
-        return result;
     }
 
-    public static void collectTrails(List<String> keys, Map<String, Lot> map, int target, int upperBound,
+    public static void collectTrails(List<String> keys, Map<String, Lot> map, int target, int lastHead,
                                      Collection<Set<String>> result, Set<String> accumTrail) {
-        int nodeIndex = findIndex(keys, map, target, 0, upperBound);
-        if (nodeIndex >= 0) {
+        int head = findIndex(keys, map, target, 0, lastHead - 1);
+        while (head >= 0) {
             Set<String> currentTrail = new TreeSet<>(accumTrail);
-            currentTrail.add(keys.get(nodeIndex));
-            // Find the subtrees
-            int nodeValue = value(keys, map, nodeIndex);
+            currentTrail.add(keys.get(head));
+            int nodeValue = value(keys, map, head);
+            int remainder = target - nodeValue;
             if (nodeValue == target) {
-                // add this trail to the result.
-                System.err.format("Finished trail: %s\n", tstr(currentTrail));
-                result.add(currentTrail);
-            } else {
-                System.err.format("Seeking subtrail: %d %d %d %s\n", target, nodeValue, nodeIndex, tstr(currentTrail));
-                collectTrails(keys, map, target - nodeValue, nodeIndex, result, currentTrail);
+                result.add(currentTrail);  // add this trail to the result.
+            } else if (remainder > 0) {
+                collectTrails(keys, map, remainder, head, result, currentTrail);
             }
-            if (nodeIndex > 0) {
-                // Process the remaining heads of trees, using the nodeIndex as the upperBound
-                collectTrails(keys, map, target, nodeIndex, result, accumTrail);
-            }
+            head = findIndex(keys, map, target, 0, head - 1);
         }
     }
 
@@ -62,7 +77,7 @@ public class Selector {
      * @return Returns the matching index or -1 if not found.
      */
     public static int findIndex(List<String> keys, Map<String, Lot> map, int target, int lo, int hi) {
-        if (lo < 0 || hi > keys.size() || target < value(keys, map, lo)) {
+        if (hi < lo || lo < 0 || hi >= keys.size() || target < value(keys, map, lo)) {
             return -1;
         }
         for (int mid = avg(lo, hi); hi - lo > 1; mid = avg(lo, hi)) {
@@ -73,7 +88,7 @@ public class Selector {
                 hi = mid;
             }
         }
-        return lo; // hi < keys.size() && value(keys, map, hi) > target ? lo : hi;
+        return value(keys, map, hi) > target ? lo : hi;
     }
 
     private static int avg(int x, int y) {
