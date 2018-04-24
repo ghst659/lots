@@ -16,9 +16,9 @@ public class SelectorRuntimeTest {
             {5, 100, 2},
             {10, 100, 3},
             {20, 50, 3},
-            {30, 30, 2},
+            {30, 30, 3},
             {50, 20, 2},
-            {75, 15, 2},
+            {75, 20, 1},
         });
     }
     private Logger log = Logger.getLogger(this.getClass().getName());
@@ -28,6 +28,7 @@ public class SelectorRuntimeTest {
     private Selector selector = null;
     public SelectorRuntimeTest(int numLots, int numTargets, int numSum) {
         Random qGen = new Random();
+        int segment = numLots / 5;
         for (int i = 0; i < numLots; ++i) {
             int lotQuantity = qGen.nextInt(numLots);
             String lotName = String.format("L%d=%d", i, lotQuantity);
@@ -38,7 +39,8 @@ public class SelectorRuntimeTest {
         for (int k = 0; k < numTargets; ++k) {
             int target = 0;
             for (int j = 0; j < numSum; ++j) {
-                int i = qGen.nextInt(numLots);
+                int range = qGen.nextInt(segment);
+                int i = segment + range;
                 target += lots.get(i).quantity();
             }
             targetRuns.add(target);
@@ -52,7 +54,6 @@ public class SelectorRuntimeTest {
         long t0 = System.currentTimeMillis();
         for (int target : targetRuns) {
             var matches = selector.matchTarget(target);
-            // log.info(String.format("\tTarget: %d; Number of combinations: %d", target, matches.size()));
             for (var trail : matches) {
                 int sum = 0;
                 for (var lotName : trail) {
