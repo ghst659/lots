@@ -63,6 +63,18 @@ public class SelectorFunctionTest {
                     {"L1=2", "L3=1"},
                 },
             },
+            {
+                new int[]{10, 1, 2, 7, 6, 1, 5},
+                8,
+                new String[][]{
+                    {"L1=1", "L3=7"},
+                    {"L5=1", "L3=7"},
+                    {"L1=1", "L2=2", "L6=5"},
+                    {"L5=1", "L2=2", "L6=5"},
+                    {"L2=2", "L4=6"},
+                    {"L1=1", "L5=1", "L4=6"},
+                }
+            },
         });
     }
     private Logger log = Logger.getLogger(this.getClass().getName());
