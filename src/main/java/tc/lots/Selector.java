@@ -13,14 +13,14 @@ public class Selector {
            return aQ.compareTo(bQ);
         });
     }
-    private void enumerate(int target, int lastHead, Collection<Set<String>> result, LinkedList<Integer>stack) {
+    private void enumerate(int target, int lastHead, List<List<Lot>> result, LinkedList<Integer>stack) {
         for (int head = locate(target, lastHead-1); head >= 0; --head) {
             int remainder = target - order.get(head).quantity();
             stack.addLast(head);
             if (remainder == 0) {
-                Set<String> trail = new TreeSet<>();
+                List<Lot> trail = new LinkedList<>();
                 for (int index : stack) {
-                    trail.add(order.get(index).name());
+                    trail.add(order.get(index));
                 }
                 result.add(trail);
             } else if (remainder > 0) {
@@ -28,6 +28,17 @@ public class Selector {
             }
             stack.removeLast();
         }
+    }
+    private Collection<Set<String>> lotListsToNameSets(List<List<Lot>> lotList) {
+        List<Set<String>> result = new LinkedList<>();
+        for (List<Lot> ll : lotList) {
+            Set<String> trail = new TreeSet<>();
+            for (Lot lot : ll) {
+                trail.add(lot.name());
+            }
+            result.add(trail);
+        }
+        return result;
     }
     private int locate(int target, int hi) {
         if (hi < 0 || hi >= order.size() || target < order.get(0).quantity()) {
@@ -50,8 +61,8 @@ public class Selector {
      * @return A collection of lot name sets, each of which has lots that satisfy the sum.
      */
     public Collection<Set<String>> matchTarget(int targetSum) {
-        Collection<Set<String>> result = new LinkedList<>();
-        enumerate(targetSum, order.size(), result, new LinkedList<>());
-        return result;
+        List<List<Lot>> lotList = new LinkedList<>();
+        enumerate(targetSum, order.size(), lotList, new LinkedList<>());
+        return lotListsToNameSets(lotList);
     }
 }
